@@ -264,7 +264,7 @@ void GetMarkerPoses(IplImage *image, ARCloud &cloud) {
 			     max_track_error, CVSEQ, true)) 
     {
       //printf("\n--------------------------\n\n");
-      for (size_t i=0; i<6; i++)  // JORGE check just the first 6 markers to save CPU   marker_detector.markers->size(); i++)
+      for (size_t i=0; i<marker_detector.markers->size(); i++)
      	{
 	  vector<cv::Point> pixels;
 	  Marker *m = &((*marker_detector.markers)[i]);
@@ -278,7 +278,7 @@ void GetMarkerPoses(IplImage *image, ARCloud &cloud) {
 	  pt4 = m->ros_marker_points_img[0];
 	  pt3 = m->ros_marker_points_img[resol-1];
 	  pt1 = m->ros_marker_points_img[(resol*resol)-resol];
-	  pt2 = m->ros_marker_points_img[(resol*resol)-1];
+	  pt2 = m->ros_marker_points_img[(resol*resol) -1];
 	  
 	  m->ros_corners_3D[0] = cloud(pt1.x, pt1.y);
 	  m->ros_corners_3D[1] = cloud(pt2.x, pt2.y);
@@ -287,7 +287,7 @@ void GetMarkerPoses(IplImage *image, ARCloud &cloud) {
 	  
 	  if(ori >= 0 && ori < 4){
 	    if(ori != 0){
-	      std::rotate(m->ros_corners_3D.begin(), m->ros_corners_3D.begin() + ori, m->ros_corners_3D.end());
+	      std::rotate(m->ros_corners_3D.begin(), m ->ros_corners_3D.begin() + ori, m->ros_corners_3D.end());
 	    }
 	  }
 	  else
@@ -348,7 +348,7 @@ void getPointCloudCallback (const sensor_msgs::PointCloud2ConstPtr &msg)
       }
 
       arPoseMarkers_.markers.clear ();
-      for (size_t i=0; i<6; i++)  // JORGE check just the first 6 markers to save CPU   marker_detector.markers->size(); i++)
+      for (size_t i=0; i<marker_detector.markers->size(); i++)
 	{
 	  //Get the pose relative to the camera
 	  int id = (*(marker_detector.markers))[i].GetId(); 
