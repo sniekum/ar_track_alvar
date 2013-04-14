@@ -263,13 +263,13 @@ void GetMarkerPoses(IplImage *image, ARCloud &cloud) {
   if (marker_detector.Detect(image, cam, true, false, max_new_marker_error,
 			     max_track_error, CVSEQ, true)) 
     {
-      printf("\n--------------------------\n\n");
+      //printf("\n--------------------------\n\n");
       for (size_t i=0; i<marker_detector.markers->size(); i++)
      	{
 	  vector<cv::Point> pixels;
 	  Marker *m = &((*marker_detector.markers)[i]);
 	  int id = m->GetId();
-	  cout << "******* ID: " << id << endl;
+	  //cout << "******* ID: " << id << endl;
 
 	  int resol = m->GetRes();
 	  int ori = m->ros_orientation;
@@ -348,7 +348,7 @@ void getPointCloudCallback (const sensor_msgs::PointCloud2ConstPtr &msg)
       }
 
       arPoseMarkers_.markers.clear ();
-      for (size_t i=0; i<marker_detector.markers->size(); i++) 
+      for (size_t i=0; i<6; i++)  // JORGE check just the first 6 markers to save CPU   marker_detector.markers->size(); i++)
 	{
 	  //Get the pose relative to the camera
 	  int id = (*(marker_detector.markers))[i].GetId(); 
