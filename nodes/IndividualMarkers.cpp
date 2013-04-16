@@ -43,6 +43,32 @@
 #include <ar_track_alvar/AlvarMarkers.h>
 #include <tf/transform_listener.h>
 #include <sensor_msgs/image_encodings.h>
+#include <dynamic_reconfigure/server.h>
+#include <ar_track_alvar/ParamsConfig.h>
+
+
+void configCallback(ar_track_alvar::ParamsConfig &config, uint32_t level) {
+  ROS_INFO("Reconfigure Request: %d %f %f %f %d",
+            config.int_param, config.double_param,
+            config.str_param.c_str(),
+            config.bool_param?"True":"False",
+            config.size);
+}
+
+int main(int argc, char **argv) {
+  ros::init(argc, argv, "ar_track_alvar");
+
+  dynamic_reconfigure::Server<ar_track_alvar::ParamsConfig> server;
+  dynamic_reconfigure::Server<ar_track_alvar::ParamsConfig>::CallbackType f;
+
+  f = boost::bind(&callback, _1, _2);
+  server.setCallback(f);
+
+  ROS_INFO("Spinning node");
+  ros::spin();
+  return 0;
+}
+
 
 namespace gm=geometry_msgs;
 namespace ata=ar_track_alvar;
@@ -68,6 +94,7 @@ tf::TransformListener *tf_listener;
 tf::TransformBroadcaster *tf_broadcaster;
 MarkerDetector<MarkerData> marker_detector;
 
+double max_frequency = 0.0;  // run at the rate of pointcloud callbacks
 double marker_size;
 double max_new_marker_error;
 double max_track_error;
@@ -460,7 +487,8 @@ int main(int argc, char *argv[])
   if(argc < 7){
     std::cout << std::endl;
     cout << "Not enough arguments provided." << endl;
-    cout << "Usage: ./individualMarkers <marker size in cm> <max new marker error> <max track error> <cam image topic> <cam info topic> <output frame>" << endl;
+    cout << "Usage: ./individualMarkers <marker size in cm> <max new marker error> <max track error> " \
+            "<cam image topic> <cam info topic> <output frame> [ <max frequency> ]" << endl;
     std::cout << std::endl;
     return 0;
   }
@@ -473,6 +501,9 @@ int main(int argc, char *argv[])
   cam_info_topic = argv[5];
   output_frame = argv[6];
   marker_detector.SetMarkerSize(marker_size);
+
+  if(argc >= 7)
+    max_frequency = atof(argv[7]);
 
   cam = new Camera(n, cam_info_topic);
   tf_listener = new tf::TransformListener(n);
@@ -488,7 +519,21 @@ int main(int argc, char *argv[])
   ROS_INFO ("Subscribing to image topic");
   cloud_sub_ = n.subscribe(cam_image_topic, 1, &getPointCloudCallback);
 
-  ros::spin ();
+  if (max_frequency <= 0.0)
+  {
+    // run at the rate of pointcloud callbacks
+    ros::spin ();
+    return 0;
+  }
+
+  // run at the configured rate, discarding pointcloud msgs if necessary
+  ros::Rate rate(max_frequency);
+
+  while (ros::ok())
+  {
+    ros::spinOnce();
+    rate.sleep();
+  }
 
   return 0;
 }
