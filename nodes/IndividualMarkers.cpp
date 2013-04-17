@@ -542,8 +542,6 @@ int main(int argc, char *argv[])
     {
       // Change rate dynamically; if must be above 0, as 0 will provoke a segfault on next spinOnce
       rate = ros::Rate(max_frequency);
-
-      ROS_DEBUG("%f",(rate.expectedCycleTime() - ros::Duration(1.0/max_frequency)).toSec());
     }
 
     if (enableSwitched == true)
