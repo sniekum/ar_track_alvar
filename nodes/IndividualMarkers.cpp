@@ -43,6 +43,8 @@
 #include <ar_track_alvar/AlvarMarkers.h>
 #include <tf/transform_listener.h>
 #include <sensor_msgs/image_encodings.h>
+#include <dynamic_reconfigure/server.h>
+#include <ar_track_alvar/ParamsConfig.h>
 
 namespace gm=geometry_msgs;
 namespace ata=ar_track_alvar;
@@ -68,6 +70,10 @@ tf::TransformListener *tf_listener;
 tf::TransformBroadcaster *tf_broadcaster;
 MarkerDetector<MarkerData> marker_detector;
 
+bool commandLineCfg = false;
+bool enableSwitched = false;
+bool enabled = true;
+double max_frequency = 30.0;  // run at the rate of pointcloud callbacks by default
 double marker_size;
 double max_new_marker_error;
 double max_track_error;
@@ -177,8 +183,8 @@ void drawArrow(gm::Point start, tf::Matrix3x3 mat, string frame, int color, int 
 }
 
 
-int PlaneFitPoseImprovement(int id, const ARCloud &corners_3D, ARCloud::Ptr selected_points, const ARCloud &cloud, Pose &p){
-
+int PlaneFitPoseImprovement(int id, const ARCloud &corners_3D, ARCloud::Ptr selected_points, const ARCloud &cloud, Pose &p)
+{
   ata::PlaneFitResult res = ata::fitPlane(selected_points);
   gm::PoseStamped pose;
   pose.header.stamp = cloud.header.stamp;
@@ -257,19 +263,19 @@ int PlaneFitPoseImprovement(int id, const ARCloud &corners_3D, ARCloud::Ptr sele
 }
 
 
-void GetMarkerPoses(IplImage *image, ARCloud &cloud) {
-
+void GetMarkerPoses(IplImage *image, ARCloud &cloud)
+{
   //Detect and track the markers
   if (marker_detector.Detect(image, cam, true, false, max_new_marker_error,
 			     max_track_error, CVSEQ, true)) 
     {
-      printf("\n--------------------------\n\n");
+      //printf("\n--------------------------\n\n");
       for (size_t i=0; i<marker_detector.markers->size(); i++)
      	{
 	  vector<cv::Point> pixels;
 	  Marker *m = &((*marker_detector.markers)[i]);
 	  int id = m->GetId();
-	  cout << "******* ID: " << id << endl;
+	  //cout << "******* ID: " << id << endl;
 
 	  int resol = m->GetRes();
 	  int ori = m->ros_orientation;
@@ -278,7 +284,7 @@ void GetMarkerPoses(IplImage *image, ARCloud &cloud) {
 	  pt4 = m->ros_marker_points_img[0];
 	  pt3 = m->ros_marker_points_img[resol-1];
 	  pt1 = m->ros_marker_points_img[(resol*resol)-resol];
-	  pt2 = m->ros_marker_points_img[(resol*resol)-1];
+	  pt2 = m->ros_marker_points_img[(resol*resol) -1];
 	  
 	  m->ros_corners_3D[0] = cloud(pt1.x, pt1.y);
 	  m->ros_corners_3D[1] = cloud(pt2.x, pt2.y);
@@ -287,7 +293,7 @@ void GetMarkerPoses(IplImage *image, ARCloud &cloud) {
 	  
 	  if(ori >= 0 && ori < 4){
 	    if(ori != 0){
-	      std::rotate(m->ros_corners_3D.begin(), m->ros_corners_3D.begin() + ori, m->ros_corners_3D.end());
+	      std::rotate(m->ros_corners_3D.begin(), m ->ros_corners_3D.begin() + ori, m->ros_corners_3D.end());
 	    }
 	  }
 	  else
@@ -303,7 +309,6 @@ void GetMarkerPoses(IplImage *image, ARCloud &cloud) {
 	}
     }
 }
-      
 
 
 void getPointCloudCallback (const sensor_msgs::PointCloud2ConstPtr &msg)
@@ -348,7 +353,7 @@ void getPointCloudCallback (const sensor_msgs::PointCloud2ConstPtr &msg)
       }
 
       arPoseMarkers_.markers.clear ();
-      for (size_t i=0; i<marker_detector.markers->size(); i++) 
+      for (size_t i=0; i<marker_detector.markers->size(); i++)
 	{
 	  //Get the pose relative to the camera
 	  int id = (*(marker_detector.markers))[i].GetId(); 
@@ -362,12 +367,12 @@ void getPointCloudCallback (const sensor_msgs::PointCloud2ConstPtr &msg)
 	  double qz = p.quaternion[3];
 	  double qw = p.quaternion[0];
 
-      tf::Quaternion rotation (qx,qy,qz,qw);
-      tf::Vector3 origin (px,py,pz);
-      tf::Transform t (rotation, origin);
-      tf::Vector3 markerOrigin (0, 0, 0);
-      tf::Transform m (tf::Quaternion::getIdentity (), markerOrigin);
-      tf::Transform markerPose = t * m; // marker pose in the camera frame
+	  tf::Quaternion rotation (qx,qy,qz,qw);
+	  tf::Vector3 origin (px,py,pz);
+	  tf::Transform t (rotation, origin);
+	  tf::Vector3 markerOrigin (0, 0, 0);
+	  tf::Transform m (tf::Quaternion::getIdentity (), markerOrigin);
+	  tf::Transform markerPose = t * m; // marker pose in the camera frame
 
 	  //Publish the transform from the camera to the marker		
 	  std::string markerFrame = "ar_marker_";
@@ -451,6 +456,29 @@ void getPointCloudCallback (const sensor_msgs::PointCloud2ConstPtr &msg)
   }
 }
 
+void configCallback(ar_track_alvar::ParamsConfig &config, uint32_t level)
+{
+  if (commandLineCfg == true)
+  {
+    // Skip the first (automatic) configuration to keep the command line parameters
+    ROS_INFO("AR tracker command line configuration: %.2f %.2f %.2f %.2f",
+             max_frequency, marker_size, max_new_marker_error, max_track_error);
+    commandLineCfg = false;
+    return;
+  }
+
+  ROS_INFO("AR tracker reconfigure request: %s %.2f %.2f %.2f %.2f", config.enabled?"ENABLED":"DISABLED",
+           config.max_frequency, config.marker_size, config.max_new_marker_error, config.max_track_error);
+
+  enableSwitched = enabled != config.enabled;
+
+  enabled              = config.enabled;
+  max_frequency        = config.max_frequency;
+  marker_size          = config.marker_size;
+  max_new_marker_error = config.max_new_marker_error;
+  max_track_error      = config.max_track_error;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -460,7 +488,8 @@ int main(int argc, char *argv[])
   if(argc < 7){
     std::cout << std::endl;
     cout << "Not enough arguments provided." << endl;
-    cout << "Usage: ./individualMarkers <marker size in cm> <max new marker error> <max track error> <cam image topic> <cam info topic> <output frame>" << endl;
+    cout << "Usage: ./individualMarkers <marker size in cm> <max new marker error> <max track error> " \
+            "<cam image topic> <cam info topic> <output frame> [ <max frequency> ]" << endl;
     std::cout << std::endl;
     return 0;
   }
@@ -474,21 +503,57 @@ int main(int argc, char *argv[])
   output_frame = argv[6];
   marker_detector.SetMarkerSize(marker_size);
 
+  if(argc > 7)
+    max_frequency = atof(argv[7]);
+
+  commandLineCfg = true;
+
   cam = new Camera(n, cam_info_topic);
   tf_listener = new tf::TransformListener(n);
   tf_broadcaster = new tf::TransformBroadcaster();
   arMarkerPub_ = n.advertise < ar_track_alvar::AlvarMarkers > ("ar_pose_marker", 0);
   rvizMarkerPub_ = n.advertise < visualization_msgs::Marker > ("visualization_marker", 0);
   rvizMarkerPub2_ = n.advertise < visualization_msgs::Marker > ("ARmarker_points", 0);
-	
-  //Give tf a chance to catch up before the camera callback starts asking for transforms
+
+  // Prepare dynamic reconfiguration
+  dynamic_reconfigure::Server<ar_track_alvar::ParamsConfig> server;
+  dynamic_reconfigure::Server<ar_track_alvar::ParamsConfig>::CallbackType f;
+
+  f = boost::bind(&configCallback, _1, _2);
+  server.setCallback(f);
+
+  // Give tf a chance to catch up before the camera callback starts asking for transforms
+  // It will also reconfigure parameters for the first time, setting the default values
   ros::Duration(1.0).sleep();
   ros::spinOnce();	
-	 
-  ROS_INFO ("Subscribing to image topic");
+
+  ROS_INFO ("Subscribing to image topic %d",argc);
   cloud_sub_ = n.subscribe(cam_image_topic, 1, &getPointCloudCallback);
 
-  ros::spin ();
+  // Run at the configured rate, discarding pointcloud msgs if necessary
+  ros::Rate rate(max_frequency);
+
+  while (ros::ok())
+  {
+    ros::spinOnce();
+    rate.sleep();
+
+    if (std::abs((rate.expectedCycleTime() - ros::Duration(1.0/max_frequency)).toSec()) > 0.001)
+    {
+      // Change rate dynamically; if must be above 0, as 0 will provoke a segfault on next spinOnce
+      rate = ros::Rate(max_frequency);
+    }
+
+    if (enableSwitched == true)
+    {
+      // Enable/disable switch: subscribe/unsubscribe to make use of pointcloud processing nodelet
+      // lazy publishing policy; in CPU-scarce computer as TurtleBot's laptop this is a huge saving
+      if (enabled == false)
+        cloud_sub_.shutdown();
+      else
+        cloud_sub_ = n.subscribe(cam_image_topic, 1, &getPointCloudCallback);
+    }
+  }
 
   return 0;
 }
