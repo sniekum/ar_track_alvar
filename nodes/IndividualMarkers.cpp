@@ -377,8 +377,9 @@ void getPointCloudCallback (const sensor_msgs::PointCloud2ConstPtr &msg)
 	  btVector3 origin (px,py,pz);
 	  btTransform t (rotation, origin);
 	  btVector3 markerOrigin (0, 0, 0);
-	  btTransform m (btQuaternion::getIdentity (), markerOrigin);
-	  btTransform markerPose = t * m; // marker pose in the camera frame
+	  btTransform m (btQuaternion(0,0,0.70710678,0.70710678), markerOrigin);
+	  t *= m;
+	  btTransform markerPose = t; // marker pose in the camera frame
 
 	  //Publish the transform from the camera to the marker		
 	  std::string markerFrame = "ar_marker_";
