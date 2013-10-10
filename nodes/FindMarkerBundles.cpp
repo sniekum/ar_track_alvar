@@ -421,6 +421,7 @@ void GetMultiMarkerPoses(IplImage *image, ARCloud &cloud) {
           m->ros_corners_3D[3] = cloud(pt[3].x, pt[3].y);
 	  
 	  if(ori >= 0 && ori < 4){
+	    // Doing what std::rotate is supposed to do
             while(ori != 0){
               ARPoint temp = m->ros_corners_3D[0];
               m->ros_corners_3D[0] = m->ros_corners_3D[1];
@@ -532,7 +533,7 @@ void makeMarkerMsgs(int type, int id, Pose &p, sensor_msgs::ImageConstPtr image_
   btTransform t (rotation, origin);  //transform from cam to marker
 
   btVector3 markerOrigin (0, 0, 0);
-  btTransform m (btQuaternion(0,0,0.70710678,0.70710678), markerOrigin);
+  btTransform m (btQuaternion(0,0,0.70710678,0.70710678), markerOrigin); // Converting to ROS' convention for coordinate frames.
   t *= m;
   btTransform markerPose = t;
 
