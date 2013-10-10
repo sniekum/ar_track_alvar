@@ -253,7 +253,7 @@ int InferCorners(const ARCloud &cloud, MultiMarkerBundle &master, ARCloud &bund_
 
         //Grab the precomputed corner coords and correct for the weird Alvar coord system
         for(int j = 0; j < 4; ++j)
-        {
+	  {
             btVector3 corner_coord = master.rel_corners[index][j];
             gm::PointStamped p, output_p;
             p.header.frame_id = marker_frame;
@@ -262,18 +262,18 @@ int InferCorners(const ARCloud &cloud, MultiMarkerBundle &master, ARCloud &bund_
             p.point.z = corner_coord.z()/100.0;
             
             try{
-                tf_listener->waitForTransform(cloud.header.frame_id, marker_frame, ros::Time(0), ros::Duration(0.1));
-                tf_listener->transformPoint(cloud.header.frame_id, p, output_p);			
+	      tf_listener->waitForTransform(cloud.header.frame_id, marker_frame, ros::Time(0), ros::Duration(0.1));
+	      tf_listener->transformPoint(cloud.header.frame_id, p, output_p);			
             }
             catch (tf::TransformException ex){
-                ROS_ERROR("ERROR InferCorners: %s",ex.what());
-                return -1;
+	      ROS_ERROR("ERROR InferCorners: %s",ex.what());
+	      return -1;
             }
 
             bund_corners[j].x += output_p.point.x;
             bund_corners[j].y += output_p.point.y;
             bund_corners[j].z += output_p.point.z;
-        }
+	  }
         master.marker_status[index] = 2; // Used for tracking
       }
     }
@@ -281,9 +281,9 @@ int InferCorners(const ARCloud &cloud, MultiMarkerBundle &master, ARCloud &bund_
   //Divide to take the average of the summed estimates
   if(n_est > 0){
     for(int i=0; i<4; i++){
-        bund_corners[i].x /= n_est;
-        bund_corners[i].y /= n_est;
-        bund_corners[i].z /= n_est;
+      bund_corners[i].x /= n_est;
+      bund_corners[i].y /= n_est;
+      bund_corners[i].z /= n_est;
     }
   }
 
@@ -303,42 +303,43 @@ int PlaneFitPoseImprovement(int id, const ARCloud &corners_3D, ARCloud::Ptr sele
 	  
   //Get 2 points that point forward in marker x direction   
   int i1,i2;
-  if(isnan(corners_3D[0].x) || isnan(corners_3D[0].y) || isnan(corners_3D[0].z) || 
-     isnan(corners_3D[3].x) || isnan(corners_3D[3].y) || isnan(corners_3D[3].z))
+  if(isnan(corners_3D[0].x) || isnan(corners_3D[0].y) || isnan(corners_3D[0].z) ||
+     isnan(corners_3D[1].x) || isnan(corners_3D[1].y) || isnan(corners_3D[1].z))
     {
-      if(isnan(corners_3D[1].x) || isnan(corners_3D[1].y) || isnan(corners_3D[1].z) || 
-	 isnan(corners_3D[2].x) || isnan(corners_3D[2].y) || isnan(corners_3D[2].z))
-	{
-	  return -1;
-	}
+      if(isnan(corners_3D[2].x) || isnan(corners_3D[2].y) || isnan(corners_3D[2].z) ||
+         isnan(corners_3D[3].x) || isnan(corners_3D[3].y) || isnan(corners_3D[3].z))
+        {
+          return -1;
+        }
       else{
-	i1 = 1;
-	i2 = 2;
-      }	
+        i1 = 3;
+        i2 = 2;
+      }
     }
   else{
     i1 = 0;
-    i2 = 3;
+    i2 = 1;
   }
+
 
   //Get 2 points the point forward in marker y direction   
   int i3,i4;
-  if(isnan(corners_3D[0].x) || isnan(corners_3D[0].y) || isnan(corners_3D[0].z) || 
-     isnan(corners_3D[1].x) || isnan(corners_3D[1].y) || isnan(corners_3D[1].z))
-    {   
-      if(isnan(corners_3D[3].x) || isnan(corners_3D[3].y) || isnan(corners_3D[3].z) || 
-	 isnan(corners_3D[2].x) || isnan(corners_3D[2].y) || isnan(corners_3D[2].z))
-	{   
-	  return -1;
-	}
+  if(isnan(corners_3D[0].x) || isnan(corners_3D[0].y) || isnan(corners_3D[0].z) ||
+     isnan(corners_3D[3].x) || isnan(corners_3D[3].y) || isnan(corners_3D[3].z))
+    {
+      if(isnan(corners_3D[1].x) || isnan(corners_3D[1].y) || isnan(corners_3D[1].z) ||
+         isnan(corners_3D[2].x) || isnan(corners_3D[2].y) || isnan(corners_3D[2].z))
+        {
+          return -1;
+        }
       else{
-	i3 = 2;
-	i4 = 3;
-      }	
+        i3 = 1;
+        i4 = 2;
+      }
     }
   else{
-    i3 = 1;
-    i4 = 0;
+    i3 = 0;
+    i4 = 3;
   }
    
   ARCloud::Ptr orient_points(new ARCloud());
@@ -394,35 +395,48 @@ void GetMultiMarkerPoses(IplImage *image, ARCloud &cloud) {
       
 	  //Get the 3D points of the outer corners
           /*
-	  PointDouble corner0 = m->marker_corners_img[0];
-	  PointDouble corner1 = m->marker_corners_img[1];
-	  PointDouble corner2 = m->marker_corners_img[2];
-	  PointDouble corner3 = m->marker_corners_img[3];
-	  m->ros_corners_3D[0] = cloud(corner0.x, corner0.y);
-	  m->ros_corners_3D[1] = cloud(corner1.x, corner1.y);
-	  m->ros_corners_3D[2] = cloud(corner2.x, corner2.y);
-	  m->ros_corners_3D[3] = cloud(corner3.x, corner3.y);
+	    PointDouble corner0 = m->marker_corners_img[0];
+	    PointDouble corner1 = m->marker_corners_img[1];
+	    PointDouble corner2 = m->marker_corners_img[2];
+	    PointDouble corner3 = m->marker_corners_img[3];
+	    m->ros_corners_3D[0] = cloud(corner0.x, corner0.y);
+	    m->ros_corners_3D[1] = cloud(corner1.x, corner1.y);
+	    m->ros_corners_3D[2] = cloud(corner2.x, corner2.y);
+	    m->ros_corners_3D[3] = cloud(corner3.x, corner3.y);
 	  */
           
 	  //Get the 3D inner corner points - more stable than outer corners that can "fall off" object
 	  int resol = m->GetRes();
 	  int ori = m->ros_orientation;
       
-	  PointDouble pt1, pt2, pt3, pt4;
-	  pt4 = m->ros_marker_points_img[0];
-	  pt3 = m->ros_marker_points_img[resol-1];
-	  pt1 = m->ros_marker_points_img[(resol*resol)-resol];
-	  pt2 = m->ros_marker_points_img[(resol*resol)-1];
-	  
-	  m->ros_corners_3D[0] = cloud(pt1.x, pt1.y);
-	  m->ros_corners_3D[1] = cloud(pt2.x, pt2.y);
-	  m->ros_corners_3D[2] = cloud(pt3.x, pt3.y);
-	  m->ros_corners_3D[3] = cloud(pt4.x, pt4.y);
+          PointDouble pt[4];
+          pt[3] = m->ros_marker_points_img[0];
+          pt[2] = m->ros_marker_points_img[resol-1];
+          pt[0] = m->ros_marker_points_img[(resol*resol)-resol];
+          pt[1] = m->ros_marker_points_img[(resol*resol)-1];
+
+          m->ros_corners_3D[0] = cloud(pt[0].x, pt[0].y);
+          m->ros_corners_3D[1] = cloud(pt[1].x, pt[1].y);
+          m->ros_corners_3D[2] = cloud(pt[2].x, pt[2].y);
+          m->ros_corners_3D[3] = cloud(pt[3].x, pt[3].y);
 	  
 	  if(ori >= 0 && ori < 4){
-	    if(ori != 0){
-	      std::rotate(m->ros_corners_3D.begin(), m->ros_corners_3D.begin() + ori, m->ros_corners_3D.end());
-	    }
+	    // Doing what std::rotate is supposed to do
+            while(ori != 0){
+              ARPoint temp = m->ros_corners_3D[0];
+              m->ros_corners_3D[0] = m->ros_corners_3D[1];
+              m->ros_corners_3D[1] = m->ros_corners_3D[2];
+              m->ros_corners_3D[2] = m->ros_corners_3D[3];
+              m->ros_corners_3D[3] = temp;
+
+              PointDouble temp2 = pt[0];
+              pt[0] = pt[1];
+              pt[1] = pt[2];
+              pt[2] = pt[3];
+              pt[3] = temp2;
+
+              ori--;
+            }
 	  }
 	  else
 	    ROS_ERROR("FindMarkerBundles: Bad Orientation: %i for ID: %i", ori, id);
@@ -440,12 +454,12 @@ void GetMultiMarkerPoses(IplImage *image, ARCloud &cloud) {
 	  for(int j=0; j<n_bundles; j++){
 	    for(int k=0; k<bundle_indices[j].size(); k++){
 	      if(bundle_indices[j][k] == id){
-            bundle_ind = j;
-            bundles_seen[j] += 1;
-            break;
-          }
-        }
-      }
+		bundle_ind = j;
+		bundles_seen[j] += 1;
+		break;
+	      }
+	    }
+	  }
 
 	  //Get the 3D marker points
 	  BOOST_FOREACH (const PointDouble& p, m->ros_marker_points_img)
@@ -457,8 +471,8 @@ void GetMultiMarkerPoses(IplImage *image, ARCloud &cloud) {
             
 	  //If the plane fit fails...
 	  if(ret < 0){
-		//Mark this tag as invalid
-		m->valid = false;
+	    //Mark this tag as invalid
+	    m->valid = false;
 	    //If this was a master tag, reset its visibility
 	    if(master_ind >= 0)
 	      master_visible[master_ind] = false;
@@ -467,7 +481,7 @@ void GetMultiMarkerPoses(IplImage *image, ARCloud &cloud) {
 	      
 	  }
 	  else
-		m->valid = true;
+	    m->valid = true;
 	}	
 
       //For each master tag, infer the 3D position of its corners from other visible tags
@@ -475,29 +489,29 @@ void GetMultiMarkerPoses(IplImage *image, ARCloud &cloud) {
       ARCloud inferred_corners;
       for(int i=0; i<n_bundles; i++){
         if(bundles_seen[i] > 0){
-            //if(master_visible[i] == false){
-                if(InferCorners(cloud, *(multi_marker_bundles[i]), inferred_corners) >= 0){
-                    ARCloud::Ptr inferred_cloud(new ARCloud(inferred_corners));
-                    PlaneFitPoseImprovement(i+5000, inferred_corners, inferred_cloud, cloud, bundlePoses[i]);
-                }
-            //}
-            //If master is visible, use it directly instead of inferring pose
-            //else{
-            //    for (size_t j=0; j<marker_detector.markers->size(); j++){
-            //        Marker *m = &((*marker_detector.markers)[j]);                     
-            //        if(m->GetId() == master_id[i])
-            //            bundlePoses[i] = m->pose;
-            //    } 
-            //}
-            Pose ret_pose;
-            if(med_filt_size > 0){
-                med_filts[i]->addPose(bundlePoses[i]);
-                med_filts[i]->getMedian(ret_pose);
-                bundlePoses[i] = ret_pose;
-            }   
+	  //if(master_visible[i] == false){
+	  if(InferCorners(cloud, *(multi_marker_bundles[i]), inferred_corners) >= 0){
+	    ARCloud::Ptr inferred_cloud(new ARCloud(inferred_corners));
+	    PlaneFitPoseImprovement(i+5000, inferred_corners, inferred_cloud, cloud, bundlePoses[i]);
+	  }
+	  //}
+	  //If master is visible, use it directly instead of inferring pose
+	  //else{
+	  //    for (size_t j=0; j<marker_detector.markers->size(); j++){
+	  //        Marker *m = &((*marker_detector.markers)[j]);                     
+	  //        if(m->GetId() == master_id[i])
+	  //            bundlePoses[i] = m->pose;
+	  //    } 
+	  //}
+	  Pose ret_pose;
+	  if(med_filt_size > 0){
+	    med_filts[i]->addPose(bundlePoses[i]);
+	    med_filts[i]->getMedian(ret_pose);
+	    bundlePoses[i] = ret_pose;
+	  }   
         }		
+      }
     }
-  }
 }
 
 
@@ -519,8 +533,9 @@ void makeMarkerMsgs(int type, int id, Pose &p, sensor_msgs::ImageConstPtr image_
   btTransform t (rotation, origin);  //transform from cam to marker
 
   btVector3 markerOrigin (0, 0, 0);
-  btTransform m (btQuaternion::getIdentity (), markerOrigin);
-  btTransform markerPose = t * m;
+  btTransform m (btQuaternion(0,0,0.70710678,0.70710678), markerOrigin); // Converting to ROS' convention for coordinate frames.
+  t *= m;
+  btTransform markerPose = t;
 
   //Publish the cam to marker transform for each marker
   std::string markerFrame = "ar_marker_";
@@ -680,91 +695,91 @@ void getPointCloudCallback (const sensor_msgs::PointCloud2ConstPtr &msg)
 int makeMasterTransform (const CvPoint3D64f& p0, const CvPoint3D64f& p1,
                          const CvPoint3D64f& p2, const CvPoint3D64f& p3,
                          btTransform &retT)
-  {
-    const btVector3 q0(p0.x, p0.y, p0.z);
-    const btVector3 q1(p1.x, p1.y, p1.z);
-    const btVector3 q2(p2.x, p2.y, p2.z);
-    const btVector3 q3(p3.x, p3.y, p3.z);
+{
+  const btVector3 q0(p0.x, p0.y, p0.z);
+  const btVector3 q1(p1.x, p1.y, p1.z);
+  const btVector3 q2(p2.x, p2.y, p2.z);
+  const btVector3 q3(p3.x, p3.y, p3.z);
   
-    // (inverse) matrix with the given properties
-    const btVector3 v = (q1-q0).normalized();
-    const btVector3 w = (q2-q1).normalized();
-    const btVector3 n = v.cross(w); 
-    btMatrix3x3 m(v[0], v[1], v[2], w[0], w[1], w[2], n[0], n[1], n[2]);
-    m = m.inverse();
+  // (inverse) matrix with the given properties
+  const btVector3 v = (q1-q0).normalized();
+  const btVector3 w = (q2-q1).normalized();
+  const btVector3 n = v.cross(w); 
+  btMatrix3x3 m(v[0], v[1], v[2], w[0], w[1], w[2], n[0], n[1], n[2]);
+  m = m.inverse();
     
-    //Translate to quaternion
-    if(m.determinant() <= 0)
-        return -1;
+  //Translate to quaternion
+  if(m.determinant() <= 0)
+    return -1;
   
-    //Use Eigen for this part instead, because the ROS version of bullet appears to have a bug
-    Eigen::Matrix3f eig_m;
-    for(int i=0; i<3; i++){
-        for(int j=0; j<3; j++){
-            eig_m(i,j) = m[i][j];
-        }
+  //Use Eigen for this part instead, because the ROS version of bullet appears to have a bug
+  Eigen::Matrix3f eig_m;
+  for(int i=0; i<3; i++){
+    for(int j=0; j<3; j++){
+      eig_m(i,j) = m[i][j];
     }
-    Eigen::Quaternion<float> eig_quat(eig_m);
-    
-    // Translate back to bullet
-    btScalar ex = eig_quat.x();
-    btScalar ey = eig_quat.y();
-    btScalar ez = eig_quat.z();
-    btScalar ew = eig_quat.w();
-    btQuaternion quat(ex,ey,ez,ew);
-    quat = quat.normalized();
-    
-    double qx = (q0.x() + q1.x() + q2.x() + q3.x()) / 4.0;
-    double qy = (q0.y() + q1.y() + q2.y() + q3.y()) / 4.0;
-    double qz = (q0.z() + q1.z() + q2.z() + q3.z()) / 4.0;
-    btVector3 origin (qx,qy,qz);
-    
-    btTransform tform (quat, origin);  //transform from master to marker
-    retT = tform;
-    
-    return 0;
   }
+  Eigen::Quaternion<float> eig_quat(eig_m);
+    
+  // Translate back to bullet
+  btScalar ex = eig_quat.x();
+  btScalar ey = eig_quat.y();
+  btScalar ez = eig_quat.z();
+  btScalar ew = eig_quat.w();
+  btQuaternion quat(ex,ey,ez,ew);
+  quat = quat.normalized();
+    
+  double qx = (q0.x() + q1.x() + q2.x() + q3.x()) / 4.0;
+  double qy = (q0.y() + q1.y() + q2.y() + q3.y()) / 4.0;
+  double qz = (q0.z() + q1.z() + q2.z() + q3.z()) / 4.0;
+  btVector3 origin (qx,qy,qz);
+    
+  btTransform tform (quat, origin);  //transform from master to marker
+  retT = tform;
+    
+  return 0;
+}
 
 
 //Find the coordinates of the Master marker with respect to the coord frame of each of it's child markers
 //This data is used for later estimation of the Master marker pose from the child poses
 int calcAndSaveMasterCoords(MultiMarkerBundle &master)
 {
-    int mast_id = master.master_id;
-    std::vector<btVector3> rel_corner_coords;
+  int mast_id = master.master_id;
+  std::vector<btVector3> rel_corner_coords;
     
-    //Go through all the markers associated with this bundle
-    for (size_t i=0; i<master.marker_indices.size(); i++){
-        int mark_id = master.marker_indices[i];
-        rel_corner_coords.clear();
+  //Go through all the markers associated with this bundle
+  for (size_t i=0; i<master.marker_indices.size(); i++){
+    int mark_id = master.marker_indices[i];
+    rel_corner_coords.clear();
         
-        //Get the coords of the corners of the child marker in the master frame
-        CvPoint3D64f mark_corners[4];
-        for(int j=0; j<4; j++){
-            mark_corners[j] = master.pointcloud[master.pointcloud_index(mark_id, j)];
-        }
-        
-        //Use them to find a transform from the master frame to the child frame
-        btTransform tform; 
-        makeMasterTransform(mark_corners[0], mark_corners[1], mark_corners[2], mark_corners[3], tform);
-    
-        //Finally, find the coords of the corners of the master in the child frame
-        for(int j=0; j<4; j++){
-            
-            CvPoint3D64f corner_coord = master.pointcloud[master.pointcloud_index(mast_id, j)];
-            double px = corner_coord.x;
-            double py = corner_coord.y;
-            double pz = corner_coord.z;
-        
-            btVector3 corner_vec (px, py, pz);
-            btVector3 ans = (tform.inverse()) * corner_vec;
-            rel_corner_coords.push_back(ans);
-        }
-        
-        master.rel_corners.push_back(rel_corner_coords);
+    //Get the coords of the corners of the child marker in the master frame
+    CvPoint3D64f mark_corners[4];
+    for(int j=0; j<4; j++){
+      mark_corners[j] = master.pointcloud[master.pointcloud_index(mark_id, j)];
     }
+        
+    //Use them to find a transform from the master frame to the child frame
+    btTransform tform; 
+    makeMasterTransform(mark_corners[0], mark_corners[1], mark_corners[2], mark_corners[3], tform);
     
-    return 0;
+    //Finally, find the coords of the corners of the master in the child frame
+    for(int j=0; j<4; j++){
+            
+      CvPoint3D64f corner_coord = master.pointcloud[master.pointcloud_index(mast_id, j)];
+      double px = corner_coord.x;
+      double py = corner_coord.y;
+      double pz = corner_coord.z;
+        
+      btVector3 corner_vec (px, py, pz);
+      btVector3 ans = (tform.inverse()) * corner_vec;
+      rel_corner_coords.push_back(ans);
+    }
+        
+    master.rel_corners.push_back(rel_corner_coords);
+  }
+    
+  return 0;
 }
 
 
