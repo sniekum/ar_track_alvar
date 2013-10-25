@@ -243,8 +243,8 @@ void getCapCallback (const sensor_msgs::ImageConstPtr & image_msg)
 
 	    // Don't draw if it is a master tag...we do this later, a bit differently
 	    bool should_draw = true;
-	    for(int i=0; i<n_bundles; i++){
-	      if(id == master_id[i]) should_draw = false;
+	    for(int j=0; j<n_bundles; j++){
+	      if(id == master_id[j]) should_draw = false;
 	    }
 	    if(should_draw){
 	      Pose p = (*(marker_detector.markers))[i].pose;
