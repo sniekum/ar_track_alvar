@@ -74,7 +74,7 @@ struct State {
             }
             if (marker_data_content_type == MarkerData::MARKER_CONTENT_TYPE_NUMBER) {
                 int idi = atoi(id);
-                md.SetContent(marker_data_content_type, idi, 0);
+                md.SetContent(marker_data_content_type, idi, 0, marker_data_force_strong_hamming);
                 if (filename.str().length()<64) filename<<"_"<<idi;
 
                 Pose pose;
@@ -82,7 +82,7 @@ struct State {
                 pose.SetTranslation(posx, -posy, 0);
                 multi_marker.PointCloudAdd(idi, marker_side_len, pose);
             } else {
-                md.SetContent(marker_data_content_type, 0, id);
+                md.SetContent(marker_data_content_type, 0, id, marker_data_force_strong_hamming);
                 const char *p = id;
                 int counter=0;
                 filename<<"_";
