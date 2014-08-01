@@ -137,12 +137,14 @@ int main(int argc, char *argv[])
                 st.marker_data_content_type = MarkerData::MARKER_CONTENT_TYPE_FILE;
             else if (strcmp(argv[i],"-3") == 0) 
                 st.marker_data_content_type = MarkerData::MARKER_CONTENT_TYPE_HTTP;
-            else if (strcmp(argv[i],"-u") == 0)
-                st.units = atof(argv[++i]);
             else if (strcmp(argv[i],"-uin") == 0)
                 st.units = (96.0);
             else if (strcmp(argv[i],"-ucm") == 0)
                 st.units = (96.0/2.54);
+            else if (strcmp(argv[i],"-u") == 0)
+            {
+                st.units = atof(argv[++i]);
+            }
             else if (strcmp(argv[i],"-s") == 0)
                 st.marker_side_len = atof(argv[++i]);
             else if (strcmp(argv[i],"-r") == 0)
