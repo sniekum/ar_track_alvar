@@ -257,7 +257,25 @@ void Camera::camInfoCallback (const sensor_msgs::CameraInfoConstPtr & cam_info)
             cvmSet(&calib_D, 2, 0, 0);
             cvmSet(&calib_D, 3, 0, 0);
         }
-		  
+	
+        bool adjust_binning = (cam_info_.binning_x > 1) || (cam_info_.binning_y > 1);
+        bool adjust_roi = (cam_info_.roi.x_offset != 0) || (cam_info_.roi.y_offset != 0);
+        if ( adjust_roi ) {
+            cvmSet(&calib_K, 0, 2, cvmGet(&calib_K, 0, 2) - cam_info_.roi.x_offset);
+            cvmSet(&calib_K, 1, 2, cvmGet(&calib_K, 1, 2) - cam_info_.roi.y_offset);
+        }
+        if ( adjust_binning ) {
+            if ( cam_info_.binning_x > 1) {
+                double scale_x = 1.0 / cam_info_.binning_x;
+                cvmSet(&calib_K, 0, 0, cvmGet(&calib_K, 0, 2) * scale_x);
+                cvmSet(&calib_K, 0, 2, cvmGet(&calib_K, 0, 2) * scale_x);
+            }
+            if ( cam_info_.binning_y > 1) {
+                double scale_y = 1.0 / cam_info_.binning_y;
+                cvmSet(&calib_K, 1, 1, cvmGet(&calib_K, 1, 2) * scale_y);
+                cvmSet(&calib_K, 1, 2, cvmGet(&calib_K, 1, 2) * scale_y);
+            }
+        }
 		getCamInfo_ = true;
     }
   }
