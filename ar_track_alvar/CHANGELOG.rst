@@ -2,6 +2,14 @@
 Changelog for package ar_track_alvar
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
+0.5.1 (2015-01-23)
+------------------
+* Updated version to 0.5.1
+* Contributors: Scott Niekum
+
 0.5.0 (2014-06-25)
 ------------------
 * move README to root directory
