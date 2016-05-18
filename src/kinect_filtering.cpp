@@ -84,7 +84,7 @@ namespace ar_track_alvar
       {
 	const cv::Point& p = pixels[i];
 	const ARPoint& pt = cloud(p.x, p.y);
-	if (isnan(pt.x) || isnan(pt.y) || isnan(pt.z)){
+	if (std::isnan(pt.x) || std::isnan(pt.y) || std::isnan(pt.z)){
 	  //ROS_INFO("    Skipping (%.4f, %.4f, %.4f)", pt.x, pt.y, pt.z);
 	}
 	else

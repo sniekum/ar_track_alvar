@@ -41,6 +41,7 @@
 #include <cv.h>
 #include <cmath> //for abs
 #include <map>
+#include <opencv2/calib3d/calib3d_c.h> //Compatibility with OpenCV 3.x
 
 namespace alvar {
 
