@@ -2,8 +2,8 @@
 Changelog for package ar_track_alvar
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.0 (2016-06-01)
+------------------
 * Made compatible to ROS-Kinetic-Kame `#80 <https://github.com/sniekum/ar_track_alvar/issues/80>`_
 * [Travis CI] Add ROS Kinetic support. Add Prerelease Test on Travis `#79 <https://github.com/sniekum/ar_track_alvar/issues/79>`_
 * Contributors: Sepehr MohaimenianPour, Isaac I.Y. Saito
