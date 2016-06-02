@@ -2,6 +2,12 @@
 Changelog for package ar_track_alvar
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Made compatible to ROS-Kinetic-Kame `#80 <https://github.com/sniekum/ar_track_alvar/issues/80>`_
+* [Travis CI] Add ROS Kinetic support. Add Prerelease Test on Travis `#79 <https://github.com/sniekum/ar_track_alvar/issues/79>`_
+* Contributors: Sepehr MohaimenianPour, Isaac I.Y. Saito
+
 0.5.3 (2016-02-02)
 ------------------
 * [feat] New bool-Topic to enable/disable the marker detection (`#70 <https://github.com/sniekum/ar_track_alvar/issues/70>`_)
