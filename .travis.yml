@@ -12,23 +12,11 @@ notifications:
       - 130s@2000.jukuin.keio.ac.jp
 env:
   matrix:
-    - ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu USE_DEB=true
-    - ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu USE_DEB=true
-    - ROS_DISTRO="indigo" PRERELEASE=true
-    - ROS_DISTRO="jade" ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu USE_DEB=true
-    - ROS_DISTRO="jade" ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu USE_DEB=true
-    - ROS_DISTRO="jade"   PRERELEASE=true
     - ROS_DISTRO="kinetic"
+    - ROS_DISTRO="kinetic" PRERELEASE=true
 matrix:
   allow_failures:
-    - env: ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu USE_DEB=true
-    - env: ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu USE_DEB=true
-    - env: ROS_DISTRO="indigo" PRERELEASE=true
-    - env: ROS_DISTRO="indigo" PRERELEASE=true
-    - env: ROS_DISTRO="jade" ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu USE_DEB=true
-    - env: ROS_DISTRO="jade" ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu USE_DEB=true
-    - env: ROS_DISTRO="jade"   PRERELEASE=true
-    - env: ROS_DISTRO="jade"   PRERELEASE=true  
+    - env: ROS_DISTRO="kinetic" PRERELEASE=true
 install:
   - git clone https://github.com/ros-industrial/industrial_ci.git .ci_config
 
