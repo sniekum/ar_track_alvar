@@ -2,6 +2,14 @@
 Changelog for package ar_track_alvar
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* New parameter -array to create an array of markers `#85 <https://github.com/sniekum/ar_track_alvar/issues/85>`_ from 130s/kinetic/add_60
+* Fix build for Kinetic by adding missing dependencies on gencfg `#84 <https://github.com/sniekum/ar_track_alvar/issues/84>`_ from 130s/kinetic/fix_buildfarm
+  
+* [sys] Add a maintainer to receive notification from ros buildfarm.
+* Contributors: Jackie Kay, Mehdi, Isaac I.Y. Saito
+
 0.6.0 (2016-06-01)
 ------------------
 * Made compatible to ROS-Kinetic-Kame `#80 <https://github.com/sniekum/ar_track_alvar/issues/80>`_
