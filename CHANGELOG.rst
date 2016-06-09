@@ -2,8 +2,8 @@
 Changelog for package ar_track_alvar
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.1 (2016-06-08)
+------------------
 * New parameter -array to create an array of markers `#85 <https://github.com/sniekum/ar_track_alvar/issues/85>`_ from 130s/kinetic/add_60
 * Fix build for Kinetic by adding missing dependencies on gencfg `#84 <https://github.com/sniekum/ar_track_alvar/issues/84>`_ from 130s/kinetic/fix_buildfarm
   
