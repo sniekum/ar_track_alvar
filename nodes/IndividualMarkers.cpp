@@ -75,6 +75,7 @@ MarkerDetector<MarkerData> marker_detector;
 
 bool enableSwitched = false;
 bool enabled = true;
+bool output_frame_from_msg;
 double max_frequency;
 double marker_size;
 double max_new_marker_error;
@@ -320,6 +321,10 @@ void getPointCloudCallback (const sensor_msgs::PointCloud2ConstPtr &msg)
 {
   sensor_msgs::ImagePtr image_msg(new sensor_msgs::Image);
 
+  // If desired, use the frame in the message's header.
+  if (output_frame_from_msg)
+    output_frame = msg->header.frame_id;
+
   //If we've already gotten the cam info, then go ahead
   if(cam->getCamInfo_){
     //Convert cloud to PCL
@@ -519,8 +524,11 @@ int main(int argc, char *argv[])
     pn.setParam("max_frequency", max_frequency);  // in case it was not set.
     pn.param("marker_resolution", marker_resolution, 5);
     pn.param("marker_margin", marker_margin, 2);
-    if (!pn.getParam("output_frame", output_frame)) {
-      ROS_ERROR("Param 'output_frame' has to be set.");
+    pn.param("output_frame_from_msg", output_frame_from_msg, false);
+
+    if (!output_frame_from_msg && !pn.getParam("output_frame", output_frame)) {
+      ROS_ERROR("Param 'output_frame' has to be set if the output frame is not "
+                "derived from the point cloud message.");
       exit(EXIT_FAILURE);
     }
 
