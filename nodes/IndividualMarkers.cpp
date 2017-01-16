@@ -352,15 +352,22 @@ void getPointCloudCallback (const sensor_msgs::PointCloud2ConstPtr &msg)
     Pose ret_pose;
     GetMarkerPoses(&ipl_image, cloud);
 
+    tf::StampedTransform CamToOutput;
+    if (image_msg->header.frame_id == output_frame) {
+      CamToOutput.setIdentity();
+    } else {
+      try {
+        tf_listener->waitForTransform(output_frame, image_msg->header.frame_id,
+                                      image_msg->header.stamp, ros::Duration(1.0));
+        tf_listener->lookupTransform(output_frame, image_msg->header.frame_id,
+                                     image_msg->header.stamp, CamToOutput);
+      } catch (tf::TransformException ex) {
+        ROS_ERROR("%s",ex.what());
+      }
+    }
+
     try{
-      tf::StampedTransform CamToOutput;
-      try{
-	tf_listener->waitForTransform(output_frame, image_msg->header.frame_id, image_msg->header.stamp, ros::Duration(1.0));
-	tf_listener->lookupTransform(output_frame, image_msg->header.frame_id, image_msg->header.stamp, CamToOutput);
-      }
-      catch (tf::TransformException ex){
-	ROS_ERROR("%s",ex.what());
-      }
+
 
       arPoseMarkers_.markers.clear ();
       for (size_t i=0; i<marker_detector.markers->size(); i++)
@@ -545,7 +552,11 @@ int main(int argc, char *argv[])
   marker_detector.SetMarkerSize(marker_size, marker_resolution, marker_margin);
 
   cam = new Camera(n, cam_info_topic);
-  tf_listener = new tf::TransformListener(n);
+
+  if (!output_frame_from_msg) {
+    // TF listener is only required when output frame != camera frame.
+    tf_listener = new tf::TransformListener(n);
+  }
   tf_broadcaster = new tf::TransformBroadcaster();
   arMarkerPub_ = n.advertise < ar_track_alvar_msgs::AlvarMarkers > ("ar_pose_marker", 0);
   rvizMarkerPub_ = n.advertise < visualization_msgs::Marker > ("visualization_marker", 0);
