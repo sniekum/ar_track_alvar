@@ -279,7 +279,7 @@ void GetMarkerPoses(IplImage *image, ARCloud &cloud) {
 	  vector<cv::Point, Eigen::aligned_allocator<cv::Point> > pixels;
 	  Marker *m = &((*marker_detector.markers)[i]);
 	  int id = m->GetId();
-	  cout << "******* ID: " << id << endl;
+	  ROS_DEBUG_STREAM("******* ID: " << id);
 
 	  int resol = m->GetRes();
 	  int ori = m->ros_orientation;
