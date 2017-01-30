@@ -82,7 +82,7 @@ double max_track_error;
 std::string cam_image_topic; 
 std::string cam_info_topic; 
 std::string output_frame;
-int marker_resolution = 7; // default marker resolution
+int marker_resolution = 5; // default marker resolution
 int marker_margin = 2; // default marker margin
 
 
