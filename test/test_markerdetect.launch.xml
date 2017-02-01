@@ -1,0 +1,20 @@
+<launch>
+  <!-- This test assumes 4markers_tork.bag is being played. -->
+  <arg name="cam_image_topic" default="/camera/image_raw" />
+  <arg name="cam_info_topic" default="/camera/camera_info" />	
+  <arg name="marker_margin" default="2" />
+  <arg name="marker_resolution" default="5" />
+  <arg name="marker_size" default="2.3" />
+  <arg name="max_new_marker_error" default="0.08" />
+  <arg name="max_frequency" default="100" />
+  <arg name="max_track_error" default="0.2" />
+  <arg name="output_frame" default="/camera" />
+  <arg name="play_bag" default="true" />
+
+  <group if="$(arg play_bag)">
+    <node pkg="rosbag" type="play" name="playing_bag" args="$(find ar_track_alvar)/tests/ar_track_alvar_4markers_tork_2017-01-30-15-03-19.bag" />
+  </group>
+
+  <node pkg="ar_track_alvar" name="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen" 
+         args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame) $(arg max_frequency) $(arg marker_resolution) $(arg marker_margin)" />
+</launch>

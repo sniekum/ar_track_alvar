@@ -145,3 +145,20 @@ install(DIRECTORY include/${PROJECT_NAME}/
 install(DIRECTORY launch bundles
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/
 )
+
+if (CATKIN_ENABLE_TESTING)
+  find_package(catkin REQUIRED COMPONENTS roslaunch rostest)
+  
+  file(GLOB LAUNCH_FILES launch/*.launch test/*.test)
+  foreach(LAUNCH_FILE ${LAUNCH_FILES})
+    roslaunch_add_file_check(${LAUNCH_FILE})
+  endforeach()
+  
+  catkin_download_test_data(
+    ${PROJECT_NAME}_4markers_tork.bag
+    http://download.ros.org/data/ar_track_alvar/ar_track_alvar_4markers_tork_2017-01-30-15-03-19.bag
+    DESTINATION ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/test
+    MD5 4ac44f7b468304b7d68e8039d8390043
+   )
+  add_rostest(test/marker.test DEPENDENCIES ${PROJECT_NAME}_4markers_tork.bag)
+endif()
