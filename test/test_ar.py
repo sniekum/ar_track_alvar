@@ -50,7 +50,6 @@ class TestArAlvarRos(unittest.TestCase):
     def setUp(self):
         rospy.init_node('test_armarker_ros_detect')
         self.tflistener = tf.TransformListener()
-        rate = rospy.Rate(10.0)
 
     def tearDown(self):
         True  # TODO impl something meaningful
@@ -64,26 +63,29 @@ class TestArAlvarRos(unittest.TestCase):
         '''
         while not rospy.is_shutdown():
             try:
-                (trans,rot) = listener.lookupTransform(origin, target, rospy.Time(0))
-            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                (trans,rot) = self.tflistener.lookupTransform(origin, target, rospy.Time(0))
+            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
+                rospy.logerr(str(e) + ' target={}'.format(target))
                 continue
         return (trans, rot)
         
-    def test_marker1(self):
+    def test_markers(self):
         '''
-        Aiming the real output taken from a bag file
-        tflistener.lookupTransform('camera', 'ar_marker_1', rospy.Time(0))
-        Out[4]:
-        ((-0.04805772245624329, 0.039528315926071665, 0.26775882622136327),
-         (0.48207151562664247, 0.8758763282975102, o-0.016363763970395625, -0.013414118615296202))
+        Aiming the real output taken from a bag file.
         '''
-        trans_expected = [-0.04805772245624329, 0.039528315926071665, 0.26775882622136327]
-        rot_expected = [0.48207151562664247, 0.8758763282975102, -0.016363763970395625, -0.013414118615296202]
-        (trans, rot) = self._lookup_tf('camera', 'ar_marker_1')
-        for v_ret, v_expected in zip(trans, trans_expected):
-            self.assertAlmostEqual(v_ret, v_expected, 3)
-        for v_ret, v_expected in zip(rot, rot_expected):
-            self.assertAlmostEqual(v_ret, v_expected, 3)
+        # The values in this list are ordered in the marker's number. 
+        tf_expected = [[[-0.04805772245624329, 0.039528315926071665, 0.26775882622136327], [0.48207151562664247, 0.8758763282975102, -0.016363763970395625, -0.013414118615296202]],
+                       [[0.00724143569105839, 0.015617918591239179, 0.26620870021332743], [0.08565822924695, 0.996063527939151, 0.005328638541876154, -0.0221747983751627]],
+                       [[0.0622400226840759, 0.014597488632830266, 0.2622754265075508], [-0.463809420375053, 0.8850930963424348, 0.03341295306922885, -0.019354765447100585]],
+                       [[0.04461061126854959, 0.05335369954390891, 0.2677638768342693], [0.6728107301594857, 0.7391760285155204, -0.013913131296136081, -0.027403376212041232]]]
+        for i in range (0, len(tf_expected)):
+            (trans, rot) = self._lookup_tf('camera', 'ar_marker_{}'.format(i))
+            # Compare each translation element (x, y, z) 
+            for v_ret, v_expected in zip(trans, tf_expected[i][0]):
+                self.assertAlmostEqual(v_ret, v_expected, 3)
+            # Compare each orientation element (x, y, z, w) 
+            for v_ret, v_expected in zip(rot, tf_expected[i][1]):
+                self.assertAlmostEqual(v_ret, v_expected, 3)
 
 if __name__ == '__main__':
     import rostest
