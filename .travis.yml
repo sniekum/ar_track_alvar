@@ -11,14 +11,12 @@ notifications:
     recipients:
       - 130s@2000.jukuin.keio.ac.jp
 env:
-  global:
-    - VERBOSE_OUTPUT='true'
   matrix:
-    - ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu USE_DEB=true
-    - ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu USE_DEB=true
+    - ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu USE_DEB=true NOT_TEST_INSTALL=true
+    - ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu USE_DEB=true NOT_TEST_INSTALL=true VERBOSE_OUTPUT='true'
     - ROS_DISTRO="indigo" PRERELEASE=true
-    - ROS_DISTRO="jade" ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu USE_DEB=true
-    - ROS_DISTRO="jade" ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu USE_DEB=true
+    - ROS_DISTRO="jade" ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu USE_DEB=true NOT_TEST_INSTALL=true VERBOSE_OUTPUT='true'
+    - ROS_DISTRO="jade" ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu USE_DEB=true NOT_TEST_INSTALL=true
     - ROS_DISTRO="jade"   PRERELEASE=true
 matrix:
   allow_failures:
