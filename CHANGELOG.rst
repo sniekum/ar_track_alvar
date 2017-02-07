@@ -2,6 +2,15 @@
 Changelog for package ar_track_alvar
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [fix] Marker no longer recognized `#93 <https://github.com/sniekum/ar_track_alvar/issues/93>`_
+* [fix] add install rule for bundles folder; fixes `#88 <https://github.com/sniekum/ar_track_alvar/issues/88>`_
+* [fix] Shutdown camera info sub after called
+* [enhancement] add mark_resolution and mark_marge as input option
+* [enhancement] individualMarkers: replace cout with ROS_DEBUG_STREAM (`#101 <https://github.com/sniekum/ar_track_alvar/issues/101>`_)
+* Contributors: Alex Reimann, Hans-Joachim Krauch, Isaac I.Y. Saito, TORK Developer 534
+
 0.6.1 (2016-06-08)
 ------------------
 * New parameter -array to create an array of markers `#85 <https://github.com/sniekum/ar_track_alvar/issues/85>`_ from 130s/kinetic/add_60
