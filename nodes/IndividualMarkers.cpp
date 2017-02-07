@@ -273,13 +273,13 @@ void GetMarkerPoses(IplImage *image, ARCloud &cloud) {
   if (marker_detector.Detect(image, cam, true, false, max_new_marker_error,
 			     max_track_error, CVSEQ, true)) 
     {
-      printf("\n--------------------------\n\n");
+      ROS_DEBUG_STREAM("--------------------------");
       for (size_t i=0; i<marker_detector.markers->size(); i++)
      	{
 	  vector<cv::Point, Eigen::aligned_allocator<cv::Point> > pixels;
 	  Marker *m = &((*marker_detector.markers)[i]);
 	  int id = m->GetId();
-	  cout << "******* ID: " << id << endl;
+	  ROS_DEBUG_STREAM("******* ID: " << id);
 
 	  int resol = m->GetRes();
 	  int ori = m->ros_orientation;
