@@ -156,12 +156,12 @@ if (CATKIN_ENABLE_TESTING)
   
   catkin_download_test_data(
     ${PROJECT_NAME}_4markers_tork.bag
-    http://download.ros.org/data/ar_track_alvar/ar_track_alvar_4markers_tork_2017-01-30-15-03-19.bag
+    http://download.ros.org/data/ar_track_alvar/ar_track_alvar_4markers_tork_2017-02-08-11-21-14.bag
     # Workaround the issue http://answers.ros.org/question/253787/accessing-data-downloaded-via-catkin_download_test_data/
     # by downloading into source folder.
     #DESTINATION ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/test
     DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/test
-    MD5 4ac44f7b468304b7d68e8039d8390043
+    MD5 627aa0316bbfe4334e06023d7c2b4087
    )
   add_rostest(test/marker.test DEPENDENCIES ${PROJECT_NAME}_4markers_tork.bag)
 endif()

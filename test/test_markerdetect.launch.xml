@@ -13,7 +13,7 @@
 
   <group if="$(arg play_bag)">
     <param name="use_sim_time" value="true" />
-    <node pkg="rosbag" type="play" name="playing_bag" args="--clock -l $(find ar_track_alvar)/test/ar_track_alvar_4markers_tork_2017-01-30-15-03-19.bag" />
+    <node pkg="rosbag" type="play" name="playing_bag" args="--clock -l $(find ar_track_alvar)/test/ar_track_alvar_4markers_tork_2017-02-08-11-21-14.bag" />
   </group>
 
   <node pkg="ar_track_alvar" name="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen" 

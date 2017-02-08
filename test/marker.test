@@ -14,13 +14,13 @@
     
   <!-- If 1 or more ar_pose_marker topic is published, that means the marker detection is functioning. -->
   <arg name='TESTNAME_MARKER_DETECTION' value='marker_recog_hz' />
-  <arg name='TESTDURATION' value='60' />
+  <arg name='TESTDURATION' value='30' />
   <test pkg="rostest" type="hztest" test-name="$(arg TESTNAME_MARKER_DETECTION)" name="$(arg TESTNAME_MARKER_DETECTION)" time-limit="$(arg TESTDURATION)" retry="2">
     <param name="topic" value="ar_pose_marker" />
     <param name="hz" value="1.0" />
     <param name="hzerror" value="50.00" />
     <param name="test_duration" value="$(arg TESTDURATION)" />
-    <param name="wait_time" value="60" />  <!-- Time for downloading may need to be included in this. -->
+    <param name="wait_time" value="$(arg TESTDURATION)" />  <!-- Time for downloading may need to be included in this. -->
   </test>
 
   <test pkg="ar_track_alvar" type="test_ar.py" test-name="marker_quarternions" name="marker_quarternions" time-limit="$(arg TESTDURATION)" retry="2" />  

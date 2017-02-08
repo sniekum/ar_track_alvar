@@ -56,6 +56,7 @@ class TestArAlvarRos(unittest.TestCase):
 
     def _lookup_tf(self, origin, target):
         '''
+        DEPRECATED: This does not return meaningful values for some reason.
         @param origin: lookupTransform's 1st argument.
         @param target: lookupTransform's 2nd argument.
         @rtype: ([str], [str])
@@ -64,6 +65,7 @@ class TestArAlvarRos(unittest.TestCase):
         while not rospy.is_shutdown():
             try:
                 (trans,rot) = self.tflistener.lookupTransform(origin, target, rospy.Time(0))
+                break
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
                 rospy.logerr(str(e) + ' target={}'.format(target))
                 continue
@@ -74,18 +76,25 @@ class TestArAlvarRos(unittest.TestCase):
         Aiming the real output taken from a bag file.
         '''
         # The values in this list are ordered in the marker's number. 
-        tf_expected = [[[-0.04805772245624329, 0.039528315926071665, 0.26775882622136327], [0.48207151562664247, 0.8758763282975102, -0.016363763970395625, -0.013414118615296202]],
-                       [[0.00724143569105839, 0.015617918591239179, 0.26620870021332743], [0.08565822924695, 0.996063527939151, 0.005328638541876154, -0.0221747983751627]],
-                       [[0.0622400226840759, 0.014597488632830266, 0.2622754265075508], [-0.463809420375053, 0.8850930963424348, 0.03341295306922885, -0.019354765447100585]],
-                       [[0.04461061126854959, 0.05335369954390891, 0.2677638768342693], [0.6728107301594857, 0.7391760285155204, -0.013913131296136081, -0.027403376212041232]]]
+        tf_expected = [[[0.04464459977845401, 0.05341412598745035, 0.26796900627543024], [0.6726999185589797, 0.7391474391806558, -0.01739267319701629, -0.028868280906256056]],
+                       [[-0.04805772245624329, 0.039528315926071665, 0.26775882622136327], [0.48207151562664247, 0.8758763282975102, -0.016363763970395625, -0.013414118615296202]],
+                       [[0.007233278235745441, 0.015615692018491452, 0.26619586686955365], [0.08546919545682985, 0.9959809257461487, -0.0001615529469785548, -0.02677659572186436]],
+                       [[0.06223014382428272, 0.014613815037010106, 0.26226145707174475], [-0.46400320825216246, 0.8850390875261293, 0.032644264656690035, -0.018471282241381157]]]
         for i in range (0, len(tf_expected)):
-            (trans, rot) = self._lookup_tf('camera', 'ar_marker_{}'.format(i))
+            while not rospy.is_shutdown():
+                try:
+                    target_frame = '/ar_marker_{}'.format(i)
+                    (trans, rot) = self.tflistener.lookupTransform('/camera', target_frame, rospy.Time(0))
+                    break
+                except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
+                    rospy.logerr(str(e) + ' target_frame={}'.format(target_frame))
+                    continue
             # Compare each translation element (x, y, z) 
             for v_ret, v_expected in zip(trans, tf_expected[i][0]):
-                self.assertAlmostEqual(v_ret, v_expected, 3)
+                self.assertAlmostEqual(v_ret, v_expected, 2)
             # Compare each orientation element (x, y, z, w) 
             for v_ret, v_expected in zip(rot, tf_expected[i][1]):
-                self.assertAlmostEqual(v_ret, v_expected, 3)
+                self.assertAlmostEqual(v_ret, v_expected, 2)
 
 if __name__ == '__main__':
     import rostest
