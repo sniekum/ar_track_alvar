@@ -2,8 +2,8 @@
 Changelog for package ar_track_alvar
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.5 (2017-02-07)
+------------------
 * [fix] Marker no longer recognized `#93 <https://github.com/sniekum/ar_track_alvar/issues/93>`_
 * [fix] add install rule for bundles folder; fixes `#88 <https://github.com/sniekum/ar_track_alvar/issues/88>`_
 * [enhancement] individualMarkers: replace cout with ROS_DEBUG_STREAM (`#101 <https://github.com/sniekum/ar_track_alvar/issues/101>`_)
