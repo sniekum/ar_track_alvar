@@ -2,8 +2,8 @@
 Changelog for package ar_track_alvar
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.3 (2017-02-09)
+------------------
 * [fix] Marker no longer recognized, for IndividualMarkersNoKinect `#93 <https://github.com/sniekum/ar_track_alvar/issues/93>`_
 * [capability] Add param to derive camera frame from pointcloud message frame (`#111 <https://github.com/sniekum/ar_track_alvar/issues/111>`_)
 * [capability ] individual marker nodes: replace command line args with ros parameters (`#99 <https://github.com/sniekum/ar_track_alvar/issues/99>`_)
