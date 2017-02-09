@@ -145,3 +145,26 @@ install(DIRECTORY include/${PROJECT_NAME}/
 install(DIRECTORY launch bundles
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/
 )
+
+if (CATKIN_ENABLE_TESTING)
+  find_package(catkin REQUIRED COMPONENTS roslaunch rostest)
+  
+  file(GLOB LAUNCH_FILES launch/*.launch test/*.test)
+  foreach(LAUNCH_FILE ${LAUNCH_FILES})
+    roslaunch_add_file_check(${LAUNCH_FILE})
+  endforeach()
+  
+  catkin_download_test_data(
+    ${PROJECT_NAME}_4markers_tork.bag
+    http://download.ros.org/data/ar_track_alvar/ar_track_alvar_4markers_tork_2017-02-08-11-21-14.bag
+    # Workaround the issue http://answers.ros.org/question/253787/accessing-data-downloaded-via-catkin_download_test_data/
+    # by downloading into source folder.
+    #DESTINATION ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/test
+    DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/test
+    MD5 627aa0316bbfe4334e06023d7c2b4087
+   )
+  add_rostest(test/marker_arg_config-basic.test DEPENDENCIES ${PROJECT_NAME}_4markers_tork.bag)
+  add_rostest(test/marker_arg_config-full.test DEPENDENCIES ${PROJECT_NAME}_4markers_tork.bag)
+  add_rostest(test/marker_param_config-basic.test DEPENDENCIES ${PROJECT_NAME}_4markers_tork.bag)
+  add_rostest(test/marker_param_config-full.test DEPENDENCIES ${PROJECT_NAME}_4markers_tork.bag)
+endif()

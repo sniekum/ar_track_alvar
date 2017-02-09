@@ -49,6 +49,9 @@ This package is a ROS wrapper for Alvar, an open source AR tag tracking library.
  <run_depend>visualization_msgs</run_depend>
  <run_depend>dynamic_reconfigure</run_depend>
 
+ <test_depend>rosbag</test_depend>
+ <test_depend>rostest</test_depend>
+
 </package>
 
 
