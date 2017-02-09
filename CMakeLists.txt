@@ -163,5 +163,8 @@ if (CATKIN_ENABLE_TESTING)
     DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/test
     MD5 627aa0316bbfe4334e06023d7c2b4087
    )
-  add_rostest(test/marker.test DEPENDENCIES ${PROJECT_NAME}_4markers_tork.bag)
+  add_rostest(test/marker_arg_config-basic.test DEPENDENCIES ${PROJECT_NAME}_4markers_tork.bag)
+  add_rostest(test/marker_arg_config-full.test DEPENDENCIES ${PROJECT_NAME}_4markers_tork.bag)
+  add_rostest(test/marker_param_config-basic.test DEPENDENCIES ${PROJECT_NAME}_4markers_tork.bag)
+  add_rostest(test/marker_param_config-full.test DEPENDENCIES ${PROJECT_NAME}_4markers_tork.bag)
 endif()
