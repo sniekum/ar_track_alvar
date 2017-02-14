@@ -160,7 +160,7 @@ if (CATKIN_ENABLE_TESTING)
     # Workaround the issue http://answers.ros.org/question/253787/accessing-data-downloaded-via-catkin_download_test_data/
     # by downloading into source folder.
     #DESTINATION ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/test
-    DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/test
+    DESTINATION ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/test
     MD5 627aa0316bbfe4334e06023d7c2b4087
    )
   add_rostest(test/marker_arg_config-basic.test DEPENDENCIES ${PROJECT_NAME}_4markers_tork.bag)
