@@ -83,6 +83,7 @@ double max_track_error;
 std::string cam_image_topic;
 std::string cam_info_topic;
 std::string output_frame;
+std::string frame_prefix;
 int marker_resolution = 5; // default marker resolution
 int marker_margin = 2; // default marker margin
 
@@ -392,7 +393,7 @@ void getPointCloudCallback (const sensor_msgs::PointCloud2ConstPtr &msg)
       tf::Transform markerPose = t * m; // marker pose in the camera frame
 
 	  //Publish the transform from the camera to the marker
-	  std::string markerFrame = "ar_marker_";
+	  std::string markerFrame = frame_prefix + "ar_marker_";
 	  std::stringstream out;
 	  out << id;
 	  std::string id_string = out.str();
@@ -521,6 +522,8 @@ int main(int argc, char *argv[])
       marker_resolution = atoi(argv[8]);
     if (argc > 9)
       marker_margin = atoi(argv[9]);
+    if (argc > 10)
+      frame_prefix = argv[10];
 
   } else {
     // Get params from ros param server.
@@ -542,6 +545,13 @@ int main(int argc, char *argv[])
     // Camera input topics. Use remapping to map to your camera topics.
     cam_image_topic = "camera_image";
     cam_info_topic = "camera_info";
+  }
+
+  if(frame_prefix == "" && pn.param("frame_prefix", frame_prefix) == "") {
+    ROS_ERROR("Param 'frame_prefix' has to be set to prevent ar conflicts");
+    exit(EXIT_FAILURE);
+  } else {
+    ROS_INFO("frame_prefix is '%s'", frame_prefix.c_str());
   }
 
   // Set dynamically configurable parameters so they don't get replaced by default values
@@ -577,7 +587,7 @@ int main(int argc, char *argv[])
   if (enabled == true)
   {
     // This always happens, as enable is true by default
-    ROS_INFO("Subscribing to image topic");
+    ROS_INFO("Subscribing to image topic: %s", cam_image_topic.c_str());
     cloud_sub_ = n.subscribe(cam_image_topic, 1, &getPointCloudCallback);
   }
 
