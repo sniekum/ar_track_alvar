@@ -547,7 +547,7 @@ int main(int argc, char *argv[])
     cam_info_topic = "camera_info";
   }
 
-  if(frame_prefix == "" && pn.param("frame_prefix", frame_prefix) == "") {
+  if(frame_prefix == "" && !pn.getParam("frame_prefix", frame_prefix)) {
     ROS_ERROR("Param 'frame_prefix' has to be set to prevent ar conflicts");
     exit(EXIT_FAILURE);
   } else {
