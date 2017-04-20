@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+  <name>ar_track_alvar_metapkg</name>
+  <version>0.6.3</version>
+  <description>Meta package for ROS ar_track_alvar related packages.</description>
+
+  <author email="iisaito@opensource-robotics.tokyo.jp">Isaac I.Y. Saito</author>
+  <maintainer email="130s@2000.jukuin.keio.ac.jp">Isaac I.Y. Saito</maintainer>
+  <license>LGPL-2.1</license>
+  <url type="website">http://ros.org/wiki/ar_track_alvar</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>ar_track_alvar</run_depend>
+  <run_depend>ar_track_alvar_msgs</run_depend>
+  <export>
+    <metapackage />
+  </export>
+</package>
