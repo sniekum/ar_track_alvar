@@ -2,6 +2,11 @@
 Changelog for package ar_track_alvar
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Consolidate ar_track_alvar* packages into a single repo (`#120 <https://github.com/sniekum/ar_track_alvar/issues/120>`_)
+* Contributors: Isaac I.Y. Saito
+
 0.6.3 (2017-02-09)
 ------------------
 * [fix] Marker no longer recognized, for IndividualMarkersNoKinect `#93 <https://github.com/sniekum/ar_track_alvar/issues/93>`_

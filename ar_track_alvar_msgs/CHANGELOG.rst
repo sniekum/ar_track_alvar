@@ -2,6 +2,11 @@
 Changelog for package ar_track_alvar_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Consolidate ar_track_alvar* packages into a single repo (`#120 <https://github.com/sniekum/ar_track_alvar/issues/120>`_)
+* Contributors: Isaac I.Y. Saito
+
 0.5.2 (2017-04-20)
 ------------------
 * Add CI config. Update maintainer. `#2 <https://github.com/sniekum/ar_track_alvar_msgs/issues/2>`_
